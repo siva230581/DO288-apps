@@ -1,2 +1,21 @@
 # Use the httpd-parent image as base
 FROM quay.io/redhattraining/httpd-parent
+
+#Add port
+EXPOSE 8080
+
+#Add Labels
+LABEL io.k8s.description="A simple httpd image" \
+      io.k8s.display-name="Apache server" \
+      io.openshift.expose-services="8080:http" \
+      io.openshift.tags="apache, httpd"
+
+# Change the web server information
+RUN sed -i 's/Listen 80/Listen 8080/g' /etc/httpd/conf/httpd.conf
+
+# permission to allow
+RUN chgrp -R 0 /var/log/httpd /var/run/httpd && \
+    chown -R g=u /var/log/httpd /var/run/httpd
+
+# run a prvileged user
+USER 1001
